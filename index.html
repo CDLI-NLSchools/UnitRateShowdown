@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unit Rate Showdown: Math 2201 Unit 6</title>
+<style>
+  :root{
+    --ink:#1c2430; --muted:#5a6572; --accent:#0b5cad; --accent-dark:#084a8a;
+    --ok:#177245; --bad:#b3261e; --card:#ffffff; --bg:#eef2f6; --line:#d4dce4;
+    --soft:#f4f8fc; --warn:#8a5a00;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.45;}
+  .wrap{max-width:779px;margin:0 auto;padding:16px 14px 48px;}
+  header{margin:10px 0 14px;}
+  h1{font-size:1.7rem;margin:0 0 2px;}
+  h2{font-size:1.3rem;margin:0 0 6px;}
+  h3{font-size:1.08rem;margin:14px 0 6px;}
+  .subtitle{color:var(--muted);font-size:1rem;margin:0 0 8px;}
+  .instruction{font-size:1.02rem;margin:0;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px;margin:14px 0;box-shadow:0 1px 3px rgba(20,40,60,.06);}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+  .controls .spacer{flex:1;}
+  button{font:inherit;cursor:pointer;border:1px solid var(--accent);background:var(--accent);color:#fff;
+    padding:9px 16px;border-radius:8px;min-height:44px;font-weight:600;}
+  button:hover{background:var(--accent-dark);}
+  button.secondary{background:#fff;color:var(--accent);}
+  button.secondary:hover{background:var(--soft);}
+  button[aria-pressed="true"]{background:var(--accent);color:#fff;border-color:var(--accent);}
+  button.secondary[aria-pressed="true"]{background:var(--accent);color:#fff;}
+  button:disabled{opacity:.55;cursor:default;}
+  button:focus-visible,input:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid #f2b01e;outline-offset:2px;}
+  .modebtns{display:flex;flex-wrap:wrap;gap:8px;}
+  .offers{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:12px 0;}
+  .offer{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:var(--soft);}
+  .offer h3{margin:0 0 4px;font-size:1.05rem;}
+  .offer p{margin:4px 0;}
+  .price{font-size:1.25rem;font-weight:700;}
+  .field{display:flex;flex-direction:column;gap:3px;margin:10px 0 0;}
+  .field label{font-size:.88rem;color:var(--muted);font-weight:600;}
+  .field input[type=text],.field input[type=number]{padding:9px 10px;font:inherit;font-size:1.02rem;border:1px solid var(--line);
+    border-radius:8px;min-height:44px;width:100%;background:#fff;}
+  textarea{padding:9px 10px;font:inherit;border:1px solid var(--line);border-radius:8px;width:100%;min-height:84px;background:#fff;}
+  .pickrow{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0 0;}
+  .pickopt{border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;gap:8px;align-items:center;background:#fff;font-weight:600;}
+  .pickopt input{width:20px;height:20px;}
+  .checkrow{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0 0;}
+  .feedback{margin:12px 0 0;border-radius:10px;padding:12px 14px;display:none;}
+  .feedback.show{display:block;}
+  .feedback.ok{background:#f2faf5;border:1px solid var(--ok);}
+  .feedback.bad{background:#fdf3f2;border:1px solid var(--bad);}
+  .feedback.info{background:var(--soft);border:1px solid var(--line);}
+  .feedback p{margin:4px 0;}
+  .feedback ul{margin:6px 0;padding-left:20px;}
+  .feedback .sumline{font-weight:700;}
+  .feedback.ok .sumline{color:var(--ok);}
+  .feedback.bad .sumline{color:var(--bad);}
+  table.plan{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0;}
+  table.plan th,table.plan td{border:1px solid var(--line);padding:5px 8px;text-align:left;}
+  table.plan th{background:var(--soft);}
+  .hidden{display:none !important;}
+  .reqbox{border:1px solid var(--line);background:var(--soft);border-radius:10px;padding:12px 14px;margin:12px 0;}
+  .reqbox p{margin:4px 0;}
+  .bigprompt{font-size:1.1rem;font-weight:600;}
+  .workline{font-size:1.05rem;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:10px 12px;}
+  .note{color:var(--muted);font-size:.94rem;}
+  #decisionSheet{background:#fff;}
+  #decisionSheet table{border-collapse:collapse;width:100%;font-size:.95rem;margin:10px 0;}
+  #decisionSheet th,#decisionSheet td{border:1px solid var(--line);padding:5px 8px;text-align:left;}
+  #decisionSheet th{background:var(--soft);}
+  @media (max-width:680px){ h1{font-size:1.4rem;} .offers{grid-template-columns:1fr;} }
+  @media print{
+    body{background:#fff;}
+    .wrap{max-width:none;padding:0;}
+    body *{visibility:hidden;}
+    #decisionSheet,#decisionSheet *{visibility:visible;}
+    #decisionSheet{position:absolute;left:0;top:0;width:100%;border:none;box-shadow:none;margin:0;padding:0;}
+    #decisionSheet textarea{border:1px solid #999;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Unit Rate Showdown</h1>
+    <p class="subtitle">Math 2201, Unit 6: Proportional Reasoning (Sections 6.16, 6.17, 6.22, 6.23)</p>
+    <p class="instruction">Practice comparing offers with unit rates, handling whole packs and whole cases, and working backwards from a total. This is formative practice: try, check, read the feedback, and try again. Nothing is recorded and nothing leaves this page.</p>
+  </header>
+
+  <div class="card controls no-print" role="group" aria-label="Choose a mode">
+    <div class="modebtns">
+      <button type="button" id="modeUR" aria-pressed="true">1. Unit Rate Rounds</button>
+      <button type="button" id="modeConstraint" class="secondary" aria-pressed="false">2. Constraint Rounds</button>
+      <button type="button" id="modeBackwards" class="secondary" aria-pressed="false">3. Work Backwards</button>
+    </div>
+  </div>
+
+  <main>
+    <!-- Mode 1: Unit Rate Rounds -->
+    <section class="card" id="panelUR" aria-labelledby="urHeading">
+      <h2 id="urHeading">Unit Rate Rounds</h2>
+      <p id="urContext"></p>
+      <p>Work out the unit rate for each offer (price divided by quantity), type it in, then pick the better buy: the offer with the lowest unit rate.</p>
+      <div class="offers" id="urOffers"></div>
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend style="font-weight:600;">Which offer is the better buy?</legend>
+        <div class="pickrow" id="urPicks"></div>
+      </fieldset>
+      <div class="checkrow">
+        <button type="button" id="urCheck">Check my work</button>
+        <button type="button" id="urNew" class="secondary">New round</button>
+      </div>
+      <div class="feedback" id="urFeedback" aria-live="polite"></div>
+    </section>
+
+    <!-- Mode 2: Constraint Rounds -->
+    <section class="card hidden" id="panelConstraint" aria-labelledby="cHeading">
+      <h2 id="cHeading">Constraint Rounds: Whole Packs and Whole Cases</h2>
+      <p>Sometimes you cannot buy exactly what you need. You must buy whole packs or whole cases, so compare total cost, not just the unit rate. The offer with the cheapest unit rate can lose once leftovers are paid for.</p>
+      <div class="modebtns" role="group" aria-label="Choose a constraint kind">
+        <button type="button" id="kindPack" aria-pressed="true">Whole-package rounds</button>
+        <button type="button" id="kindCase" class="secondary" aria-pressed="false">By-the-case rounds</button>
+      </div>
+      <div class="reqbox">
+        <p class="bigprompt" id="cRequirement"></p>
+        <p id="cContext"></p>
+      </div>
+      <div class="offers" id="cOffers"></div>
+      <fieldset style="border:none;padding:0;margin:0;">
+        <legend style="font-weight:600;">Which option costs the least in total?</legend>
+        <div class="pickrow" id="cPicks"></div>
+      </fieldset>
+      <div class="checkrow">
+        <button type="button" id="cCheck">Check my choice</button>
+        <button type="button" id="cNew" class="secondary">New round</button>
+      </div>
+      <div class="feedback" id="cFeedback" aria-live="polite"></div>
+      <div id="cPlanWrap"></div>
+    </section>
+
+    <!-- Mode 3: Work Backwards -->
+    <section class="card hidden" id="panelBackwards" aria-labelledby="bHeading">
+      <h2 id="bHeading">Work Backwards</h2>
+      <p>You are given a rate and one value. Isolate the missing variable: divide the total by the rate, or multiply the rate by the amount, whichever fits the units.</p>
+      <p class="workline" id="bPrompt"></p>
+      <div class="field" style="max-width:320px;">
+        <label for="bInput" id="bInputLabel">Your answer</label>
+        <input type="text" inputmode="decimal" id="bInput" autocomplete="off">
+      </div>
+      <div class="checkrow">
+        <button type="button" id="bCheck">Check my answer</button>
+        <button type="button" id="bNew" class="secondary">New round</button>
+      </div>
+      <div class="feedback" id="bFeedback" aria-live="polite"></div>
+    </section>
+
+    <!-- Decision sheet -->
+    <section class="card" id="decisionSheet" aria-labelledby="dsHeading">
+      <h2 id="dsHeading">Decision Sheet</h2>
+      <p class="note no-print">This sheet fills in from the rounds you have checked. Add your justification, then print it and submit it to the assignment folder if your teacher asks for it.</p>
+      <div id="dsBody">
+        <p>No checked round yet. Check a round above and your work will appear here.</p>
+      </div>
+      <div class="field">
+        <label for="dsJustify">My justification (type why your pick makes sense, in your own words)</label>
+        <textarea id="dsJustify" placeholder="Example: I compared the unit rates. The second offer costs less for each unit, so it is the better buy even though its sticker price is higher."></textarea>
+      </div>
+      <div class="checkrow no-print">
+        <button type="button" id="printBtn">Print decision sheet</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+"use strict";
+// ==GENERATOR==
+// Pure generator and checking logic for Unit Rate Showdown. No DOM access here.
+// Every function takes an rng (a function returning a number in [0, 1)) so the
+// harness can drive generation with a seeded generator. When rng is omitted,
+// Math.random is used.
+
+function makeRng(seed) {
+  var a = (seed >>> 0) || 1;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    var t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function rngOr(rng) { return (typeof rng === "function") ? rng : Math.random; }
+function rPick(rng, arr) { return arr[Math.floor(rngOr(rng)() * arr.length)]; }
+function rInt(rng, min, max) { return min + Math.floor(rngOr(rng)() * (max - min + 1)); }
+function rShuffle(rng, arr) {
+  var r = rngOr(rng);
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(r() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+function roundMoney(x) { return Math.round(x * 100) / 100; }
+function round3(x) { return Math.round(x * 1000) / 1000; }
+
+// ---- Core pure math ----
+
+// Unit rate for one offer: price divided by quantity.
+function unitRate(offer) { return offer.price / offer.quantity; }
+
+// Plan for buying at least `required` units in whole packs.
+// offer.packSize is the pack size and offer.price is the price per pack.
+function packagePlan(offer, required) {
+  var packs = Math.ceil(required / offer.packSize);
+  var totalUnits = packs * offer.packSize;
+  return {
+    packs: packs,
+    totalUnits: totalUnits,
+    totalCost: roundMoney(packs * offer.price),
+    leftover: totalUnits - required,
+    unitRate: offer.price / offer.packSize
+  };
+}
+
+// Plan for buying at least `required` units in whole cases.
+// offer.caseSize is the case size and offer.price is the price per case.
+function casePlan(offer, required) {
+  var cases = Math.ceil(required / offer.caseSize);
+  var totalUnits = cases * offer.caseSize;
+  return {
+    cases: cases,
+    packs: cases,
+    totalUnits: totalUnits,
+    totalCost: roundMoney(cases * offer.price),
+    leftover: totalUnits - required,
+    unitRate: offer.price / offer.caseSize
+  };
+}
+
+// Answer for a work-backwards round, by its stored operation.
+function backwardsAnswer(round) {
+  if (round.operation === "divide") return round.given / round.rate;
+  if (round.operation === "multiply") return round.given * round.rate;
+  if (round.operation === "per100") return round.given * round.rate / 100;
+  return NaN;
+}
+
+// ---- Mode 1: unit rate rounds ----
+
+var UR_CONTEXTS = [
+  { item: "Granola bars", unit: "bar", quantities: [6, 8, 10, 12, 20],
+    rates: [0.65, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00, 1.10],
+    blurb: "You are stocking up on granola bars for a hiking club." },
+  { item: "Juice boxes", unit: "juice box", quantities: [6, 8, 12, 24],
+    rates: [0.70, 0.80, 0.90, 1.00, 1.10, 1.20],
+    blurb: "You are buying juice boxes for a school canteen." },
+  { item: "Pencils", unit: "pencil", quantities: [5, 8, 10, 12, 24],
+    rates: [0.40, 0.50, 0.60, 0.70, 0.80],
+    blurb: "A class set of pencils is on the supply list." },
+  { item: "Rice", unit: "kg", quantities: [2, 4, 5, 8, 10],
+    rates: [1.60, 1.80, 2.00, 2.20, 2.40, 2.60],
+    blurb: "Two stores sell the same brand of rice in different bag sizes." },
+  { item: "Printer paper", unit: "sheet", quantities: [100, 250, 500],
+    rates: [0.04, 0.05, 0.06, 0.08, 0.10],
+    blurb: "The school office is comparing packs of printer paper." },
+  { item: "Yogurt cups", unit: "cup", quantities: [4, 6, 8, 12],
+    rates: [0.90, 1.00, 1.10, 1.20, 1.30],
+    blurb: "Yogurt cups come in several pack sizes at the grocery store." },
+  { item: "Muffins", unit: "muffin", quantities: [4, 6, 12],
+    rates: [1.10, 1.25, 1.40, 1.50, 1.65],
+    blurb: "A bakery sells muffins in trays of different sizes." },
+  { item: "Bottled water", unit: "bottle", quantities: [6, 12, 24, 35],
+    rates: [0.50, 0.60, 0.70, 0.80, 0.90],
+    blurb: "A team needs bottled water for a tournament weekend." },
+  { item: "Trail mix", unit: "100 g", quantities: [3, 5, 8, 10],
+    rates: [1.20, 1.40, 1.60, 1.80, 2.00],
+    blurb: "Bulk trail mix is sold by weight, priced here for each 100 g." },
+  { item: "Eggs", unit: "egg", quantities: [6, 12, 18, 30],
+    rates: [0.35, 0.40, 0.45, 0.50, 0.55],
+    blurb: "Egg cartons come in several sizes." }
+];
+
+function generateUnitRateRound(rng) {
+  var r = rngOr(rng);
+  var ctx = rPick(r, UR_CONTEXTS);
+  var nOffers = (r() < 0.3) ? 3 : 2;
+  var rates = rShuffle(r, ctx.rates.slice()).slice(0, nOffers);
+  var qtys = rShuffle(r, ctx.quantities.slice()).slice(0, nOffers);
+  var offers = [];
+  for (var i = 0; i < nOffers; i++) {
+    offers.push({
+      name: "Offer " + (i + 1),
+      item: ctx.item,
+      quantity: qtys[i],
+      unit: ctx.unit,
+      price: roundMoney(qtys[i] * rates[i]),
+      rateUnit: "$ per " + ctx.unit
+    });
+  }
+  // Recompute the winner from the rounded prices, so the declared winner
+  // always matches price divided by quantity on the displayed numbers.
+  var winner = 0;
+  for (var k = 1; k < offers.length; k++) {
+    if (unitRate(offers[k]) < unitRate(offers[winner])) winner = k;
+  }
+  return {
+    kind: "unitRate",
+    item: ctx.item,
+    unit: ctx.unit,
+    context: ctx.blurb,
+    offers: offers,
+    winnerIndex: winner
+  };
+}
+
+// ---- Mode 2: constraint rounds ----
+
+var PACK_CONTEXTS = [
+  { item: "Paper cups", unit: "cup", need: "cups for a school fair",
+    packSizes: [10, 20, 25, 50], rates: [0.12, 0.15, 0.18, 0.20, 0.24, 0.28],
+    reqMin: 30, reqMax: 120 },
+  { item: "Cookies", unit: "cookie", need: "cookies for a bake sale table",
+    packSizes: [6, 8, 12, 24], rates: [0.70, 0.80, 0.90, 1.00, 1.10],
+    reqMin: 20, reqMax: 90 },
+  { item: "Pencils", unit: "pencil", need: "pencils for exam week",
+    packSizes: [5, 10, 12, 20], rates: [0.40, 0.50, 0.60, 0.70],
+    reqMin: 18, reqMax: 80 },
+  { item: "Juice boxes", unit: "juice box", need: "juice boxes for a field trip",
+    packSizes: [6, 8, 12, 24], rates: [0.75, 0.85, 0.95, 1.05],
+    reqMin: 24, reqMax: 100 },
+  { item: "Batteries", unit: "battery", need: "batteries for science kits",
+    packSizes: [4, 8, 12, 16], rates: [1.10, 1.25, 1.40, 1.60],
+    reqMin: 14, reqMax: 60 },
+  { item: "Napkins", unit: "napkin", need: "napkins for a community supper",
+    packSizes: [20, 40, 50, 100], rates: [0.05, 0.06, 0.08, 0.10],
+    reqMin: 60, reqMax: 240 }
+];
+
+var CASE_CONTEXTS = [
+  { item: "Pop cans", unit: "can", need: "cans of pop for a tournament canteen",
+    caseSizes: [12, 24, 30, 36], rates: [0.55, 0.65, 0.75, 0.85, 0.95],
+    reqMin: 60, reqMax: 300 },
+  { item: "Canned soup", unit: "can", need: "cans of soup for a food drive",
+    caseSizes: [12, 24, 48], rates: [0.90, 1.00, 1.10, 1.25],
+    reqMin: 50, reqMax: 260 },
+  { item: "Water bottles", unit: "bottle", need: "bottles of water for a fun run",
+    caseSizes: [12, 24, 35, 40], rates: [0.45, 0.55, 0.65, 0.75],
+    reqMin: 70, reqMax: 320 },
+  { item: "Granola bars", unit: "bar", need: "granola bars for a breakfast program",
+    caseSizes: [24, 48, 60], rates: [0.60, 0.70, 0.80, 0.90],
+    reqMin: 80, reqMax: 360 },
+  { item: "Copy paper", unit: "pack", need: "packs of copy paper for the office",
+    caseSizes: [5, 10], rates: [6.50, 7.50, 8.50, 9.50],
+    reqMin: 12, reqMax: 60 }
+];
+
+// Build one constraint candidate. When wantBite is true the construction is
+// steered: the larger pack gets the lower unit rate, and the required amount
+// sits just past a whole number of large packs, so the large pack forces one
+// extra purchase while the smaller pack lands much closer to the target.
+function buildConstraintCandidate(rng, ctx, isCase, wantBite) {
+  var r = rngOr(rng);
+  var sizes = isCase ? ctx.caseSizes : ctx.packSizes;
+  var sorted = sizes.slice().sort(function (a, b) { return a - b; });
+  var smallSize, largeSize;
+  if (wantBite) {
+    // Prefer a pair where the small size divides the large size evenly, so a
+    // required amount can land exactly on a multiple of the small pack while
+    // sitting just past a multiple of the large pack.
+    var divPairs = [];
+    for (var pi = 0; pi < sorted.length; pi++) {
+      for (var pj = 0; pj < sorted.length; pj++) {
+        if (sorted[pj] > sorted[pi] && sorted[pj] % sorted[pi] === 0) divPairs.push([sorted[pi], sorted[pj]]);
+      }
+    }
+    if (divPairs.length) {
+      var dp = rPick(r, divPairs);
+      smallSize = dp[0]; largeSize = dp[1];
+    } else {
+      smallSize = sorted[0];
+      largeSize = sorted[sorted.length - 1];
+    }
+  } else {
+    var pair = rShuffle(r, sizes.slice()).slice(0, 2);
+    smallSize = Math.min(pair[0], pair[1]);
+    largeSize = Math.max(pair[0], pair[1]);
+  }
+  var lowRate, highRate;
+  if (wantBite) {
+    // Adjacent rates from the sorted list: close enough that the leftover
+    // waste on the large pack can outweigh its small unit rate advantage.
+    var sRates = ctx.rates.slice().sort(function (a, b) { return a - b; });
+    var ri = rInt(r, 0, sRates.length - 2);
+    lowRate = sRates[ri];
+    highRate = sRates[ri + 1];
+  } else {
+    var rates = rShuffle(r, ctx.rates.slice()).slice(0, 2);
+    lowRate = Math.min(rates[0], rates[1]);
+    highRate = Math.max(rates[0], rates[1]);
+    if (lowRate === highRate) highRate = roundMoney(lowRate + 0.1);
+  }
+  // In a bite candidate the large pack carries the lower unit rate.
+  var largeRate = wantBite ? lowRate : (r() < 0.5 ? lowRate : highRate);
+  var smallRate = (largeRate === lowRate) ? highRate : lowRate;
+  var required;
+  if (wantBite) {
+    var fullLarge = (r() < 0.7) ? 1 : 2;
+    required = fullLarge * largeSize + smallSize;
+    if (required < ctx.reqMin) {
+      // Top up in whole large packs, which keeps the same just-past shape.
+      while (required < ctx.reqMin) required += largeSize;
+    }
+    if (required > ctx.reqMax) required = largeSize + smallSize;
+  } else {
+    required = rInt(r, ctx.reqMin, ctx.reqMax);
+  }
+  function mkOffer(size, rate, idx) {
+    var o = { name: "Option " + (idx + 1), item: ctx.item, unit: ctx.unit,
+      price: roundMoney(size * rate), rateUnit: "$ per " + ctx.unit };
+    if (isCase) { o.caseSize = size; o.quantity = size; }
+    else { o.packSize = size; o.quantity = size; }
+    return o;
+  }
+  var offers = [mkOffer(smallSize, smallRate, 0), mkOffer(largeSize, largeRate, 1)];
+  if (r() < 0.5) offers.reverse();
+  offers.forEach(function (o, i) { o.name = "Option " + (i + 1); });
+  return { offers: offers, required: required };
+}
+
+function finishConstraintRound(rng, ctx, isCase, candidate) {
+  var planFn = isCase ? casePlan : packagePlan;
+  var plans = candidate.offers.map(function (o) { return planFn(o, candidate.required); });
+  var cheapest = 0, lowestRate = 0, i;
+  for (i = 1; i < plans.length; i++) {
+    if (plans[i].totalCost < plans[cheapest].totalCost) cheapest = i;
+    if (plans[i].unitRate < plans[lowestRate].unitRate) lowestRate = i;
+  }
+  return {
+    kind: isCase ? "case" : "package",
+    item: ctx.item,
+    unit: ctx.unit,
+    need: ctx.need,
+    required: candidate.required,
+    offers: candidate.offers,
+    plans: plans,
+    cheapestIndex: cheapest,
+    lowestUnitRateIndex: lowestRate,
+    constraintBites: cheapest !== lowestRate
+  };
+}
+
+function generateConstraintRound(rng, ctxList, isCase) {
+  var r = rngOr(rng);
+  var ctx = rPick(r, ctxList);
+  var wantBite = r() < 0.55;
+  var best = null;
+  for (var attempt = 0; attempt < 30; attempt++) {
+    var cand = buildConstraintCandidate(r, ctx, isCase, wantBite && attempt < 20);
+    var round = finishConstraintRound(r, ctx, isCase, cand);
+    if (!best) best = round;
+    if (round.constraintBites === wantBite) return round;
+    if (wantBite && round.constraintBites) best = round;
+  }
+  return best;
+}
+
+function generatePackageRound(rng) { return generateConstraintRound(rng, PACK_CONTEXTS, false); }
+function generateCaseRound(rng) { return generateConstraintRound(rng, CASE_CONTEXTS, true); }
+
+// ---- Mode 3: work backwards ----
+
+var BACKWARDS_BUILDERS = [
+  function (rng) {
+    var r = rngOr(rng);
+    var rate = rPick(r, [16.50, 18.00, 20.00, 22.50, 24.00, 26.50, 28.00, 31.25]);
+    var hours = rInt(r, 5, 38);
+    var total = roundMoney(rate * hours);
+    return { kind: "backwards", subtype: "wages", missing: "time", operation: "divide",
+      rate: rate, rateUnit: "$ per hour", given: total, givenUnit: "$", answerUnit: "hours",
+      answer: hours,
+      prompt: "Sam earns $" + rate.toFixed(2) + " per hour. Sam's pay before deductions is $" + total.toFixed(2) + ". How many hours did Sam work?" };
+  },
+  function (rng) {
+    var r = rngOr(rng);
+    var rate = rPick(r, [50, 60, 70, 80, 90, 100]);
+    var time = rPick(r, [1.5, 2, 2.5, 3, 3.5, 4, 5]);
+    var dist = rate * time;
+    return { kind: "backwards", subtype: "travelTime", missing: "time", operation: "divide",
+      rate: rate, rateUnit: "km per hour", given: dist, givenUnit: "km", answerUnit: "hours",
+      answer: time,
+      prompt: "A bus travels at an average speed of " + rate + " km per hour. It covers " + dist + " km. How long does the trip take, in hours?" };
+  },
+  function (rng) {
+    var r = rngOr(rng);
+    var rate = rPick(r, [10, 12, 15, 20, 25]);
+    var litres = rInt(r, 8, 60);
+    var dist = rate * litres;
+    return { kind: "backwards", subtype: "fuelLitres", missing: "quantity", operation: "divide",
+      rate: rate, rateUnit: "km per litre", given: dist, givenUnit: "km", answerUnit: "litres",
+      answer: litres,
+      prompt: "A car travels " + rate + " km for each litre of fuel. It drives " + dist + " km. How many litres of fuel does it use?" };
+  },
+  function (rng) {
+    var r = rngOr(rng);
+    var rate = rPick(r, [2.50, 3.25, 3.75, 4.20, 4.50, 5.60]);
+    var qty = rInt(r, 3, 24);
+    var total = roundMoney(rate * qty);
+    return { kind: "backwards", subtype: "findQuantity", missing: "quantity", operation: "divide",
+      rate: rate, rateUnit: "$ per item", given: total, givenUnit: "$", answerUnit: "items",
+      answer: qty,
+      prompt: "Notebooks cost $" + rate.toFixed(2) + " each. A class spends $" + total.toFixed(2) + " in total. How many notebooks were bought?" };
+  },
+  function (rng) {
+    var r = rngOr(rng);
+    var rate = rPick(r, [0.08, 0.10, 0.12, 0.15, 0.20]);
+    var pages = rPick(r, [60, 80, 100, 120, 150, 200, 240]);
+    var cost = roundMoney(rate * pages);
+    return { kind: "backwards", subtype: "printingCost", missing: "cost", operation: "multiply",
+      rate: rate, rateUnit: "$ per page", given: pages, givenUnit: "pages", answerUnit: "$",
+      answer: cost,
+      prompt: "Printing costs $" + rate.toFixed(2) + " per page. How much does it cost to print " + pages + " pages?" };
+  },
+  function (rng) {
+    var r = rngOr(rng);
+    var rate = rPick(r, [12.00, 14.50, 15.00, 18.75, 21.00]);
+    var hours = rPick(r, [4, 5, 6, 7, 8, 10, 12]);
+    var pay = roundMoney(rate * hours);
+    return { kind: "backwards", subtype: "earningsCost", missing: "cost", operation: "multiply",
+      rate: rate, rateUnit: "$ per hour", given: hours, givenUnit: "hours", answerUnit: "$",
+      answer: pay,
+      prompt: "A tutor charges $" + rate.toFixed(2) + " per hour. How much does " + hours + " hours of tutoring cost?" };
+  },
+  function (rng) {
+    var r = rngOr(rng);
+    var rate = rPick(r, [7.5, 8.0, 8.5, 9.0, 9.5, 10.5]);
+    var dist = rPick(r, [200, 300, 400, 500, 600]);
+    var litres = rate * dist / 100;
+    return { kind: "backwards", subtype: "fuelUsePer100", missing: "quantity", operation: "per100",
+      rate: rate, rateUnit: "litres per 100 km", given: dist, givenUnit: "km", answerUnit: "litres",
+      answer: litres,
+      prompt: "A truck uses " + rate + " litres of fuel for each 100 km. How many litres does it use on a " + dist + " km trip?" };
+  },
+  function (rng) {
+    var r = rngOr(rng);
+    var rate = rPick(r, [1.80, 2.10, 2.40, 2.75, 3.00]);
+    var kg = rPick(r, [2, 3, 4, 5, 6, 8]);
+    var cost = roundMoney(rate * kg);
+    return { kind: "backwards", subtype: "produceCost", missing: "cost", operation: "multiply",
+      rate: rate, rateUnit: "$ per kg", given: kg, givenUnit: "kg", answerUnit: "$",
+      answer: cost,
+      prompt: "Potatoes cost $" + rate.toFixed(2) + " per kg. How much does " + kg + " kg cost?" };
+  }
+];
+
+function generateBackwardsRound(rng) {
+  var builder = rPick(rngOr(rng), BACKWARDS_BUILDERS);
+  var round = builder(rng);
+  round.answer = backwardsAnswer(round);
+  return round;
+}
+// ==END GENERATOR==
+
+// ---- UI ----
+
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
+function money(x) { return "$" + Number(x).toFixed(2); }
+function fmtRate(x) { return "$" + (Math.round(x * 1000) / 1000).toFixed(2).replace(/0$/, "") ; }
+function fmtNum(x) { return String(Math.round(x * 1000) / 1000); }
+function parseNum(v) {
+  if (v === null || v === undefined) return NaN;
+  var t = String(v).trim().replace(/^\$/, "").replace(/,/g, "");
+  if (t === "") return NaN;
+  var n = Number(t);
+  return isNaN(n) ? NaN : n;
+}
+
+var state = {
+  mode: "ur",
+  ur: null,
+  constraintKind: "package",
+  constraint: null,
+  backwards: null,
+  lastChecked: null
+};
+
+// Mode switching
+function setMode(mode) {
+  state.mode = mode;
+  $("panelUR").classList.toggle("hidden", mode !== "ur");
+  $("panelConstraint").classList.toggle("hidden", mode !== "constraint");
+  $("panelBackwards").classList.toggle("hidden", mode !== "backwards");
+  [["modeUR", "ur"], ["modeConstraint", "constraint"], ["modeBackwards", "backwards"]].forEach(function (pair) {
+    var on = pair[1] === mode;
+    $(pair[0]).setAttribute("aria-pressed", String(on));
+    $(pair[0]).classList.toggle("secondary", !on);
+  });
+}
+$("modeUR").addEventListener("click", function () { setMode("ur"); });
+$("modeConstraint").addEventListener("click", function () { setMode("constraint"); });
+$("modeBackwards").addEventListener("click", function () { setMode("backwards"); });
+
+function showFeedback(el, html, cls) {
+  el.innerHTML = html;
+  el.className = "feedback show " + cls;
+}
+function hideFeedback(el) { el.innerHTML = ""; el.className = "feedback"; }
+
+// ---- Mode 1 UI ----
+
+function newURRound() {
+  state.ur = generateUnitRateRound(Math.random);
+  var round = state.ur;
+  $("urContext").textContent = round.context;
+  var wrap = $("urOffers");
+  wrap.innerHTML = "";
+  round.offers.forEach(function (o, i) {
+    var div = document.createElement("div");
+    div.className = "offer";
+    div.innerHTML = "<h3>" + esc(o.name) + ": " + esc(o.item) + "</h3>" +
+      "<p>" + o.quantity + " " + esc(o.unit) + (o.quantity === 1 ? "" : "s") + "</p>" +
+      "<p class=\"price\">" + money(o.price) + "</p>" +
+      "<div class=\"field\"><label for=\"ur-in-" + i + "\">Unit rate for " + esc(o.name) + " (" + esc(o.rateUnit) + ")</label>" +
+      "<input type=\"text\" inputmode=\"decimal\" id=\"ur-in-" + i + "\" autocomplete=\"off\" placeholder=\"price / quantity\"></div>";
+    wrap.appendChild(div);
+  });
+  var picks = $("urPicks");
+  picks.innerHTML = "";
+  round.offers.forEach(function (o, i) {
+    var lab = document.createElement("label");
+    lab.className = "pickopt";
+    lab.innerHTML = "<input type=\"radio\" name=\"urPick\" value=\"" + i + "\"> " + esc(o.name);
+    picks.appendChild(lab);
+  });
+  hideFeedback($("urFeedback"));
+}
+
+function checkedPick(name) {
+  var els = document.querySelectorAll("input[name='" + name + "']");
+  for (var i = 0; i < els.length; i++) if (els[i].checked) return parseInt(els[i].value, 10);
+  return -1;
+}
+
+$("urCheck").addEventListener("click", function () {
+  var round = state.ur, fb = $("urFeedback");
+  var lines = [], allRatesOk = true, entered = [];
+  round.offers.forEach(function (o, i) {
+    var v = parseNum($("ur-in-" + i).value);
+    entered.push(v);
+    var exact = unitRate(o);
+    if (isNaN(v)) {
+      allRatesOk = false;
+      lines.push(esc(o.name) + ": no unit rate entered yet. Divide the price by the quantity: " + money(o.price) + " / " + o.quantity + ".");
+    } else if (Math.abs(v - exact) <= 0.011) {
+      lines.push(esc(o.name) + ": unit rate is right, about " + fmtRate(exact) + " per " + esc(o.unit) + " (" + money(o.price) + " / " + o.quantity + ").");
+    } else if (Math.abs(v - o.price) < 0.001) {
+      allRatesOk = false;
+      lines.push(esc(o.name) + ": you entered the total price. A unit rate is the price for one " + esc(o.unit) + ", so divide: " + money(o.price) + " / " + o.quantity + " " + esc(o.unit) + "s.");
+    } else if (o.quantity > 0 && Math.abs(v - (o.quantity / o.price)) <= 0.011) {
+      allRatesOk = false;
+      lines.push(esc(o.name) + ": that looks like the division flipped. Unit rate is price divided by quantity, not quantity divided by price.");
+    } else {
+      allRatesOk = false;
+      lines.push(esc(o.name) + ": not quite. Check the division: " + money(o.price) + " / " + o.quantity + ".");
+    }
+  });
+  var pick = checkedPick("urPick");
+  var pickOk = pick === round.winnerIndex;
+  if (pick < 0) {
+    lines.push("Pick the better buy before checking: choose the offer you think wins.");
+  } else if (!pickOk) {
+    var winRate = unitRate(round.offers[round.winnerIndex]);
+    var pickRate = unitRate(round.offers[pick]);
+    var hint = "";
+    if (round.offers[pick].price < round.offers[round.winnerIndex].price) {
+      hint = " Likely slip: you compared total prices. The lower sticker price is not always the better buy: compare the cost for one unit instead.";
+    }
+    lines.push("Better buy: " + esc(round.offers[pick].name) + " costs about " + fmtRate(pickRate) + " per " + esc(round.unit) +
+      ", while " + esc(round.offers[round.winnerIndex].name) + " costs about " + fmtRate(winRate) + " per " + esc(round.unit) + "." + hint);
+  } else {
+    lines.push("Better buy: correct. " + esc(round.offers[pick].name) + " has the lowest unit rate, about " + fmtRate(unitRate(round.offers[pick])) + " per " + esc(round.unit) + ".");
+  }
+  var ok = allRatesOk && pickOk;
+  var head = ok ? "That is a clean sweep: every unit rate and the better buy are right."
+    : "Keep going: read each line, fix what it points to, and check again.";
+  showFeedback(fb, "<p class=\"sumline\">" + head + "</p><ul><li>" + lines.join("</li><li>") + "</li></ul>", ok ? "ok" : "bad");
+  state.lastChecked = { mode: "ur", round: round, entered: entered, pick: pick };
+  renderDecisionSheet();
+});
+$("urNew").addEventListener("click", newURRound);
+
+// ---- Mode 2 UI ----
+
+function setConstraintKind(kind) {
+  state.constraintKind = kind;
+  $("kindPack").setAttribute("aria-pressed", String(kind === "package"));
+  $("kindPack").classList.toggle("secondary", kind !== "package");
+  $("kindCase").setAttribute("aria-pressed", String(kind === "case"));
+  $("kindCase").classList.toggle("secondary", kind !== "case");
+  newConstraintRound();
+}
+$("kindPack").addEventListener("click", function () { setConstraintKind("package"); });
+$("kindCase").addEventListener("click", function () { setConstraintKind("case"); });
+
+function planFor(round, offer) {
+  return round.kind === "case" ? casePlan(offer, round.required) : packagePlan(offer, round.required);
+}
+function sizeOf(offer) { return offer.caseSize !== undefined ? offer.caseSize : offer.packSize; }
+function containerWord(round) { return round.kind === "case" ? "case" : "pack"; }
+
+function newConstraintRound() {
+  state.constraint = state.constraintKind === "case" ? generateCaseRound(Math.random) : generatePackageRound(Math.random);
+  var round = state.constraint;
+  var word = containerWord(round);
+  $("cRequirement").textContent = "You need at least " + round.required + " " + esc(round.unit) + "s: " + esc(round.need) + ".";
+  $("cContext").textContent = "Both options sell " + round.item.toLowerCase() + " only in whole " + word + "s. Choose one option and buy only whole " + word + "s of it.";
+  var wrap = $("cOffers");
+  wrap.innerHTML = "";
+  round.offers.forEach(function (o) {
+    var div = document.createElement("div");
+    div.className = "offer";
+    div.innerHTML = "<h3>" + esc(o.name) + ": " + esc(o.item) + "</h3>" +
+      "<p>" + word.charAt(0).toUpperCase() + word.slice(1) + " of " + sizeOf(o) + " " + esc(o.unit) + "s</p>" +
+      "<p class=\"price\">" + money(o.price) + " per " + word + "</p>" +
+      "<p class=\"note\">Unit rate: about " + fmtRate(unitRate(o)) + " per " + esc(o.unit) + ". Unit rate alone does not settle this round.</p>";
+    wrap.appendChild(div);
+  });
+  var picks = $("cPicks");
+  picks.innerHTML = "";
+  round.offers.forEach(function (o, i) {
+    var lab = document.createElement("label");
+    lab.className = "pickopt";
+    lab.innerHTML = "<input type=\"radio\" name=\"cPick\" value=\"" + i + "\"> Buy " + esc(o.name);
+    picks.appendChild(lab);
+  });
+  hideFeedback($("cFeedback"));
+  $("cPlanWrap").innerHTML = "";
+}
+
+$("cCheck").addEventListener("click", function () {
+  var round = state.constraint, fb = $("cFeedback");
+  var word = containerWord(round);
+  var pick = checkedPick("cPick");
+  if (pick < 0) {
+    showFeedback(fb, "<p class=\"sumline\">Choose an option first, then check.</p>", "info");
+    return;
+  }
+  var plans = round.offers.map(function (o) { return planFor(round, o); });
+  var cheapest = round.cheapestIndex;
+  var diff = roundMoney(Math.abs(plans[0].totalCost - plans[1].totalCost));
+  var rows = plans.map(function (p, i) {
+    var n = round.kind === "case" ? p.cases : p.packs;
+    return "<tr><td>" + esc(round.offers[i].name) + "</td><td>" + n + "</td><td>" + p.totalUnits + "</td><td>" +
+      money(p.totalCost) + "</td><td>" + p.leftover + "</td><td>" + fmtRate(p.unitRate) + "</td></tr>";
+  }).join("");
+  $("cPlanWrap").innerHTML = "<h3>What each option really costs</h3><table class=\"plan\"><tr><th>Option</th><th>" +
+    (round.kind === "case" ? "Cases" : "Packs") + " to buy</th><th>Total " + esc(round.unit) + "s</th><th>Total cost</th><th>Leftover " +
+    esc(round.unit) + "s</th><th>Unit rate</th></tr>" + rows + "</table>";
+  var ok = pick === cheapest;
+  var lines = [];
+  plans.forEach(function (p, i) {
+    var n = round.kind === "case" ? p.cases : p.packs;
+    lines.push(esc(round.offers[i].name) + ": " + n + " " + word + "s gives " + p.totalUnits + " " + esc(round.unit) +
+      "s for " + money(p.totalCost) + ", with " + p.leftover + " left over.");
+  });
+  if (ok) {
+    lines.push("Your choice costs the least in total: " + money(plans[cheapest].totalCost) + ", which is " + money(diff) + " less than the other option.");
+  } else {
+    lines.push("Your choice costs " + money(plans[pick].totalCost) + " in total. " + esc(round.offers[cheapest].name) +
+      " costs " + money(plans[cheapest].totalCost) + ", so switching saves " + money(diff) + ".");
+    if (pick === round.lowestUnitRateIndex) {
+      lines.push("Likely slip: you followed the lowest unit rate and forgot the whole " + word + " rule. Once you must round up to whole " +
+        word + "s, the leftover " + word + "s are paid for too, and they can erase the unit rate advantage.");
+    }
+  }
+  if (round.constraintBites) {
+    lines.push("Notice: " + esc(round.offers[round.lowestUnitRateIndex].name) + " has the lowest unit rate, but it does not win here, because its " +
+      word + " size forces more leftover units.");
+  }
+  var head = ok ? "Good call: that is the lowest total cost." : "Not the cheapest overall: compare the totals, not just the unit rates.";
+  showFeedback(fb, "<p class=\"sumline\">" + head + "</p><ul><li>" + lines.join("</li><li>") + "</li></ul>", ok ? "ok" : "bad");
+  state.lastChecked = { mode: "constraint", round: round, pick: pick, plans: plans };
+  renderDecisionSheet();
+});
+$("cNew").addEventListener("click", newConstraintRound);
+
+// ---- Mode 3 UI ----
+
+function newBackwardsRound() {
+  state.backwards = generateBackwardsRound(Math.random);
+  $("bPrompt").textContent = state.backwards.prompt;
+  $("bInputLabel").textContent = "Your answer (" + state.backwards.answerUnit + ")";
+  $("bInput").value = "";
+  hideFeedback($("bFeedback"));
+}
+
+$("bCheck").addEventListener("click", function () {
+  var round = state.backwards, fb = $("bFeedback");
+  var v = parseNum($("bInput").value);
+  var ans = backwardsAnswer(round);
+  var tol = Math.max(0.06, Math.abs(ans) * 0.01);
+  var step;
+  if (round.operation === "divide") step = "Isolate the missing value by dividing: " + fmtNum(round.given) + " / " + fmtNum(round.rate) + " = " + fmtNum(ans) + " " + esc(round.answerUnit) + ".";
+  else if (round.operation === "multiply") step = "Isolate the missing value by multiplying: " + fmtNum(round.rate) + " x " + fmtNum(round.given) + " = " + fmtNum(ans) + " " + esc(round.answerUnit) + ".";
+  else step = "Work in steps of 100 km: " + fmtNum(round.given) + " km is " + fmtNum(round.given / 100) + " hundreds of km, and " + fmtNum(round.given / 100) + " x " + fmtNum(round.rate) + " = " + fmtNum(ans) + " " + esc(round.answerUnit) + ".";
+  if (isNaN(v)) {
+    showFeedback(fb, "<p class=\"sumline\">Enter a number first.</p><p>" + step + "</p>", "info");
+    return;
+  }
+  if (Math.abs(v - ans) <= tol) {
+    showFeedback(fb, "<p class=\"sumline\">Correct: " + fmtNum(ans) + " " + esc(round.answerUnit) + ".</p><p>" + step + "</p>", "ok");
+  } else {
+    var trap = "";
+    if (round.operation === "divide" && Math.abs(v - round.rate * round.given) <= Math.max(1, round.rate * round.given * 0.02)) {
+      trap = " Likely slip: you multiplied the rate by the total. When the total and the rate are both given, the missing value comes from dividing the total by the rate.";
+    } else if (round.operation === "multiply" && round.rate !== 0 && Math.abs(v - round.given / round.rate) <= Math.max(0.5, (round.given / round.rate) * 0.05)) {
+      trap = " Likely slip: you divided. Here the rate is applied to the given amount, so multiply the rate by the amount.";
+    } else if (round.operation === "per100" && Math.abs(v - round.rate * round.given) <= Math.max(1, round.rate * round.given * 0.02)) {
+      trap = " Likely slip: you multiplied the rate by the whole distance. The rate covers each 100 km, so first count how many hundreds of km the trip has.";
+    }
+    showFeedback(fb, "<p class=\"sumline\">Not yet: the answer is " + fmtNum(ans) + " " + esc(round.answerUnit) + ".</p><p>" + step + trap + "</p>", "bad");
+  }
+  state.lastChecked = { mode: "backwards", round: round, entered: v };
+  renderDecisionSheet();
+});
+$("bNew").addEventListener("click", newBackwardsRound);
+
+// ---- Decision sheet ----
+
+function renderDecisionSheet() {
+  var body = $("dsBody"), last = state.lastChecked;
+  if (!last) return;
+  var html = "";
+  if (last.mode === "ur") {
+    var r = last.round;
+    html += "<h3>Unit Rate Round: " + esc(r.item) + "</h3><p>" + esc(r.context) + "</p>";
+    html += "<table><tr><th>Offer</th><th>Quantity</th><th>Price</th><th>My unit rate</th><th>Unit rate</th></tr>";
+    r.offers.forEach(function (o, i) {
+      var entered = last.entered[i];
+      html += "<tr><td>" + esc(o.name) + (i === last.pick ? " (my pick)" : "") + (i === r.winnerIndex ? " (better buy)" : "") +
+        "</td><td>" + o.quantity + " " + esc(o.unit) + "s</td><td>" + money(o.price) + "</td><td>" +
+        (isNaN(entered) ? "not entered" : fmtRate(entered)) + "</td><td>" + fmtRate(unitRate(o)) + "</td></tr>";
+    });
+    html += "</table><p>My pick: <strong>" + (last.pick >= 0 ? esc(r.offers[last.pick].name) : "none") +
+      "</strong>. Better buy: <strong>" + esc(r.offers[r.winnerIndex].name) + "</strong>, at about " +
+      fmtRate(unitRate(r.offers[r.winnerIndex])) + " per " + esc(r.unit) + ".</p>";
+  } else if (last.mode === "constraint") {
+    var c = last.round, word = containerWord(c);
+    html += "<h3>Constraint Round: " + esc(c.item) + "</h3><p>Requirement: at least " + c.required + " " + esc(c.unit) +
+      "s (" + esc(c.need) + "), bought in whole " + word + "s only.</p>";
+    html += "<table><tr><th>Option</th><th>" + (c.kind === "case" ? "Case" : "Pack") + " size</th><th>Price per " + word +
+      "</th><th>Unit rate</th><th>" + (c.kind === "case" ? "Cases" : "Packs") + " bought</th><th>Total cost</th><th>Leftover</th></tr>";
+    c.offers.forEach(function (o, i) {
+      var p = last.plans[i];
+      var n = c.kind === "case" ? p.cases : p.packs;
+      html += "<tr><td>" + esc(o.name) + (i === last.pick ? " (my pick)" : "") + (i === c.cheapestIndex ? " (lowest total)" : "") +
+        "</td><td>" + sizeOf(o) + "</td><td>" + money(o.price) + "</td><td>" + fmtRate(p.unitRate) + "</td><td>" + n +
+        "</td><td>" + money(p.totalCost) + "</td><td>" + p.leftover + "</td></tr>";
+    });
+    html += "</table><p>My pick: <strong>" + esc(c.offers[last.pick].name) + "</strong>, total " + money(last.plans[last.pick].totalCost) +
+      ". Lowest total: <strong>" + esc(c.offers[c.cheapestIndex].name) + "</strong>, total " + money(last.plans[c.cheapestIndex].totalCost) + ".</p>";
+  } else {
+    var b = last.round;
+    html += "<h3>Work Backwards</h3><p>" + esc(b.prompt) + "</p><p>Rate: " + fmtNum(b.rate) + " " + esc(b.rateUnit) +
+      ". Given: " + fmtNum(b.given) + " " + esc(b.givenUnit) + ". My answer: <strong>" +
+      (isNaN(last.entered) ? "not entered" : fmtNum(last.entered) + " " + esc(b.answerUnit)) + "</strong>. Worked answer: <strong>" +
+      fmtNum(backwardsAnswer(b)) + " " + esc(b.answerUnit) + "</strong>.</p>";
+  }
+  body.innerHTML = html;
+}
+
+$("printBtn").addEventListener("click", function () { window.print(); });
+
+// Start
+newURRound();
+newConstraintRound();
+newBackwardsRound();
+</script>
+</body>
+</html>
